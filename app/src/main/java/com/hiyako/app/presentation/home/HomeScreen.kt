@@ -85,7 +85,7 @@ val mockAnimes = listOf(
     )
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(onMenuClick: () -> Unit) {
     val pagerState = rememberPagerState { 3 }
