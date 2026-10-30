@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.hiyako.app.presentation.character.CharacterDetailsScreen
 import com.hiyako.app.presentation.details.DetailsScreen
 import com.hiyako.app.presentation.home.HomeScreen
 import com.hiyako.app.presentation.library.LibraryScreen
@@ -82,6 +83,11 @@ class MainActivity : ComponentActivity() {
                                 val title = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("title") ?: "", "UTF-8")
                                 val posterUrl = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("posterUrl") ?: "", "UTF-8")
                                 DetailsScreen(title, posterUrl, navController)
+                            }
+                            composable("character/{name}/{image}") { backStackEntry ->
+                                val name = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("name") ?: "", "UTF-8")
+                                val image = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("image") ?: "", "UTF-8")
+                                CharacterDetailsScreen(name, image, navController)
                             }
                             composable("player/{videoUrl}") { backStackEntry ->
                                 val videoUrl = java.net.URLDecoder.decode(backStackEntry.arguments?.getString("videoUrl") ?: "", "UTF-8")

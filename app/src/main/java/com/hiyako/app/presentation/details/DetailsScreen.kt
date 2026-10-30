@@ -32,7 +32,6 @@ fun DetailsScreen(title: String, posterUrl: String, navController: NavController
     var episodeSearchQuery by remember { mutableStateOf("") }
     val tabs = listOf("Details", "Episodes", "Watch History", "Favorite Episodes", "Gallery")
 
-    // Test video URL for now
     val testVideoUrl = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
 
     fun playVideo() {
@@ -58,6 +57,7 @@ fun DetailsScreen(title: String, posterUrl: String, navController: NavController
                 
                 Spacer(modifier = Modifier.height(50.dp))
                 
+                // Header Info
                 Row(modifier = Modifier.padding(16.dp)) {
                     AsyncImage(model = posterUrl, contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.width(120.dp).height(180.dp).clip(RoundedCornerShape(8.dp)))
                     Spacer(modifier = Modifier.width(16.dp))
@@ -70,9 +70,33 @@ fun DetailsScreen(title: String, posterUrl: String, navController: NavController
                         Box(modifier = Modifier.background(Color(0xFF4CAF50), RoundedCornerShape(4.dp)).padding(horizontal = 8.dp, vertical = 4.dp)) {
                             Text("On Going", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        // MAL and Ani Ratings
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            // MAL Rating
+                            Column {
+                                Box(modifier = Modifier.background(Color(0xFF2E51A2), RoundedCornerShape(4.dp)).padding(horizontal = 6.dp, vertical = 2.dp)) {
+                                    Text("MAL", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("8.92 /10", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text("56K", color = Color.Gray, fontSize = 10.sp)
+                            }
+                            // AniList Rating
+                            Column {
+                                Box(modifier = Modifier.background(Color(0xFFE50046), RoundedCornerShape(4.dp)).padding(horizontal = 6.dp, vertical = 2.dp)) {
+                                    Text("Ani", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text("9.63 /10", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text("1K", color = Color.Gray, fontSize = 10.sp)
+                            }
+                        }
                     }
                 }
 
+                // Action Buttons
                 Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
                     Button(onClick = { playVideo() }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary), shape = RoundedCornerShape(8.dp), modifier = Modifier.weight(1f).height(45.dp)) {
                         Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.White)
@@ -86,6 +110,7 @@ fun DetailsScreen(title: String, posterUrl: String, navController: NavController
 
                 Spacer(modifier = Modifier.height(16.dp))
                 
+                // Tabs
                 LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(tabs.size) { index ->
                         val tab = tabs[index]
@@ -109,6 +134,23 @@ fun DetailsScreen(title: String, posterUrl: String, navController: NavController
                         Spacer(modifier = Modifier.height(8.dp))
                         Text("Story", color = Color.White, fontWeight = FontWeight.Bold)
                         Text("An epic story about $title.", color = Color.LightGray)
+                    }
+                }
+                
+                // Characters Section
+                item {
+                    Text("Characters", color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp))
+                    val mockCharacters = listOf("Gyro Zeppeli", "Johnny Joestar", "Funny Valentine", "Diego Brando")
+                    LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(mockCharacters) { char ->
+                            Column(modifier = Modifier.width(100.dp).clickable { 
+                                navController.navigate("character/${java.net.URLEncoder.encode(char, "UTF-8")}/${java.net.URLEncoder.encode(posterUrl, "UTF-8")}")
+                            }) {
+                                AsyncImage(model = posterUrl, contentDescription = null, modifier = Modifier.height(140.dp).fillMaxWidth().clip(RoundedCornerShape(8.dp)), contentScale = ContentScale.Crop)
+                                Text(char, color = Color.White, fontSize = 12.sp, maxLines = 1, modifier = Modifier.padding(top = 4.dp))
+                                Text("MAIN", color = Color.Gray, fontSize = 10.sp)
+                            }
+                        }
                     }
                 }
             } else if (selectedTab == 1) {
