@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Article
 import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Download
@@ -27,12 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.hiyako.app.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -45,21 +44,20 @@ fun HomeScreen() {
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = false, // تعطيل السحب لفتح الدراور
         drawerContent = {
             ModalDrawerSheet(
                 drawerContainerColor = DrawerBg,
                 modifier = Modifier.width(300.dp)
             ) {
-                // 1. رأس الدراور (صورة الغروب + صورة البروفايل)
+                // 1. رأس الدراور
                 Box(modifier = Modifier.height(200.dp).fillMaxWidth()) {
-                    // صورة الغروب
                     AsyncImage(
                         model = "https://images.unsplash.com/photo-1495616811223-4d98c6e9c869?auto=format&fit=crop&w=600&q=80",
                         contentDescription = "Cover",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()
                     )
-                    // زر إغلاق الدراور
                     Box(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
@@ -69,10 +67,9 @@ fun HomeScreen() {
                             .clickable { scope.launch { drawerState.close() } },
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("✕", color = Color.White, fontSize = 16.sp) // سنستبدلها بأيقونة لاحقاً
+                        Text("✕", color = Color.White, fontSize = 16.sp)
                     }
                     
-                    // صورة البروفايل المتداخلة مع شارة التوثيق
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomStart)
@@ -84,7 +81,6 @@ fun HomeScreen() {
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.size(80.dp).clip(CircleShape).background(Color.White)
                         )
-                        // شارة التوثيق البرتقالية
                         Box(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
@@ -97,13 +93,11 @@ fun HomeScreen() {
                     }
                 }
                 
-                // اسم المستخدم
                 Column(modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 16.dp)) {
                     Text("alsb_tv", color = TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     Text("@alsb_tv", color = TextSecondary, fontSize = 14.sp)
                 }
 
-                // عناصر القائمة (21 عنصراً بأيقونات حقيقية)
                 val drawerItems = listOf(
                     "Home" to Icons.Filled.Home,
                     "Search" to Icons.Filled.Search,
@@ -137,12 +131,7 @@ fun HomeScreen() {
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                imageVector = item.second,
-                                contentDescription = item.first,
-                                tint = TextPrimary,
-                                modifier = Modifier.size(24.dp)
-                            )
+                            Icon(imageVector = item.second, contentDescription = item.first, tint = TextPrimary, modifier = Modifier.size(24.dp))
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(item.first, color = TextPrimary, fontSize = 16.sp)
                         }
@@ -154,18 +143,24 @@ fun HomeScreen() {
         Scaffold(
             containerColor = DarkBg,
             topBar = {
-                // الشريط العلوي (نسخ حرفي للصورة)
+                // الشريط العلوي (تم تقليل الحشوة العلوية من 40 إلى 24 ليرتفع للأعلى)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 40.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .padding(top = 24.dp, start = 16.dp, end = 16.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(Icons.Filled.Menu, contentDescription = "Menu", tint = TextSecondary)
                     }
-                    Text("Browse Anime", color = TextSecondary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        "Browse Anime", 
+                        color = TextSecondary, 
+                        fontSize = 18.sp, 
+                        fontWeight = FontWeight.Bold, 
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
                     Row {
                         IconButton(onClick = { }) {
                             Icon(Icons.Filled.Notifications, contentDescription = "Alerts", tint = TextSecondary)
@@ -177,9 +172,9 @@ fun HomeScreen() {
                 }
             },
             bottomBar = {
-                // شريط التنقل السفلي (نسخ حرفي للصورة)
+                // شريط التنقل السفلي (4 أزرار)
                 NavigationBar(containerColor = DrawerBg, modifier = Modifier.height(64.dp)) {
-                    val navItems = listOf("Home", "Library", "Profile")
+                    val navItems = listOf("Home", "Library", "News", "Profile")
                     navItems.forEachIndexed { index, item ->
                         NavigationBarItem(
                             selected = selectedNavItem == index,
@@ -188,7 +183,8 @@ fun HomeScreen() {
                                 when (index) {
                                     0 -> Icon(Icons.Filled.Home, contentDescription = "Home", tint = if (selectedNavItem == 0) AccentRed else TextSecondary)
                                     1 -> Icon(Icons.Outlined.BookmarkBorder, contentDescription = "Library", tint = if (selectedNavItem == 1) AccentRed else TextSecondary)
-                                    2 -> AsyncImage(
+                                    2 -> Icon(Icons.Outlined.Article, contentDescription = "News", tint = if (selectedNavItem == 2) AccentRed else TextSecondary)
+                                    3 -> AsyncImage(
                                         model = "https://s4.anilist.co/file/anilistcdn/character/large/b1-1y1y1.jpg",
                                         contentDescription = "Profile",
                                         contentScale = ContentScale.Crop,
@@ -203,7 +199,6 @@ fun HomeScreen() {
                 }
             }
         ) { paddingValues ->
-            // هنا سنضع البنر والبطاقات لاحقاً
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
                 Text("Content goes here...", color = TextSecondary)
             }
