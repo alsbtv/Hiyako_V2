@@ -22,8 +22,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.ExperimentalFoundationApi
-import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -32,11 +30,14 @@ import com.hiyako.app.ui.components.AnimeBottomSheet
 import com.hiyako.app.ui.components.AnimeCard
 import com.hiyako.app.ui.theme.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.foundation.ExperimentalFoundationApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(
     onAnimeClick: (ScrapedAnime) -> Unit,
+    onNavigateToAi: () -> Unit, // تم إضافة هذا المتغير
     viewModel: HomeViewModel = viewModel()
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -47,7 +48,6 @@ fun HomeScreen(
     val latestAnime by viewModel.latestAnime.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
-    // حالة النافذة المنسدلة
     var selectedAnimeForSheet by remember { mutableStateOf<ScrapedAnime?>(null) }
 
     ModalNavigationDrawer(
@@ -93,11 +93,16 @@ fun HomeScreen(
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
                 LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 16.dp)) {
                     item {
-                        Row(modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(top = 16.dp, start = 16.dp, end = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text("☰", fontSize = 24.sp, color = TextPrimary, modifier = Modifier.clickable { scope.launch { drawerState.open() } })
                             Text("Browse Anime", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                            Row {
-                                Text("🔔", fontSize = 20.sp, modifier = Modifier.padding(end = 16.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                // زر الذكاء الاصطناعي
+                                Text("🤖", fontSize = 22.sp, modifier = Modifier.padding(end = 16.dp).clickable { onNavigateToAi() })
                                 Text("🔍", fontSize = 20.sp)
                             }
                         }
@@ -142,8 +147,6 @@ fun HomeScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
                                 LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                                     items(latestAnime) { anime ->
-                                        // هنا نمرر دالة الضغط على الصورة (تذهب للتفاصيل) ودالة الضغط على النقاط الثلاث (تفتح الشيت)
-                                        // كبديل مؤقت، سنستخدم الضغط العادي لفتح الشيت
                                         AnimeCard(
                                             title = anime.title,
                                             posterUrl = anime.posterUrl ?: "",
@@ -161,7 +164,6 @@ fun HomeScreen(
                     }
                 }
 
-                // عرض النافذة المنسدلة إذا تم اختيار أنمي
                 selectedAnimeForSheet?.let { anime ->
                     AnimeBottomSheet(
                         anime = anime,
