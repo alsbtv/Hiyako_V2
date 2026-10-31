@@ -14,8 +14,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         
+        <!-- تم إصلاح المسار هنا ليصبح .MainActivity بدلاً من .presentation.MainActivity -->
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@android:style/Theme.Material.NoActionBar">
             <intent-filter>

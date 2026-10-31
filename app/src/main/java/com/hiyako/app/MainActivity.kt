@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.hiyako.app.data.model.ScrapedAnime
+import com.hiyako.app.ui.screens.AiChatScreen
 import com.hiyako.app.ui.screens.DetailsScreen
 import com.hiyako.app.ui.screens.HomeScreen
 import com.hiyako.app.ui.theme.DarkBg
@@ -27,17 +28,21 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(navController = navController, startDestination = "home") {
                         composable("home") {
-                            HomeScreen(onAnimeClick = { anime ->
-                                selectedAnime = anime
-                                navController.navigate("details")
-                            })
+                            HomeScreen(
+                                onAnimeClick = { anime ->
+                                    selectedAnime = anime
+                                    navController.navigate("details")
+                                },
+                                onNavigateToAi = { navController.navigate("ai_chat") }
+                            )
                         }
                         composable("details") {
                             selectedAnime?.let { anime ->
-                                DetailsScreen(anime = anime, onBack = {
-                                    navController.popBackStack()
-                                })
+                                DetailsScreen(anime = anime, onBack = { navController.popBackStack() })
                             }
+                        }
+                        composable("ai_chat") {
+                            AiChatScreen(onBack = { navController.popBackStack() })
                         }
                     }
                 }
