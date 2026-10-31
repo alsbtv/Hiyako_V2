@@ -18,7 +18,6 @@ private val DarkColorScheme = darkColorScheme(
 fun HiyakoTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = DarkColorScheme,
-        typography = Typography,
         content = content
     )
 }
