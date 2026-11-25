@@ -20,14 +20,33 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 8.9
-      - name: Build debug APK
-        run: gradle assembleDebug --stacktrace
+
+      - name: Ensure signing key (created once, then reused)
+        run: |
+          if [ ! -f keystore/hiyako.keystore ]; then
+            mkdir -p keystore
+            keytool -genkeypair -keystore keystore/hiyako.keystore -storetype PKCS12 \
+              -alias hiyako -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass hiyako123 -keypass hiyako123 \
+              -dname "CN=Hiyako, O=Hiyako, C=OM"
+            git config user.name "github-actions"
+            git config user.email "github-actions@users.noreply.github.com"
+            git add keystore/hiyako.keystore
+            git commit -m "Add signing key"
+            git push
+          fi
+
+      - name: Build APK
+        run: gradle assembleRelease --stacktrace
+
       - name: Rename APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk Hiyako-${{ github.run_number }}.apk
+        run: cp app/build/outputs/apk/release/app-release.apk Hiyako-${{ github.run_number }}.apk
+
       - uses: actions/upload-artifact@v4
         with:
-          name: hiyako-debug-apk
+          name: hiyako-apk
           path: Hiyako-${{ github.run_number }}.apk
+
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
